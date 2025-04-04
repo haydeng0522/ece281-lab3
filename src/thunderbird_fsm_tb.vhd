@@ -109,7 +109,6 @@ begin
 	     assert w_lights = "000000" report "bad reset" severity failure;
 	   
 	   w_reset <= '0';
-	   wait for k_clk_period*1;
 	   
 	   w_left <= '1'; w_right <= '1'; wait for k_clk_period*1;
 	     assert w_lights = "111111" report "bad off to on" severity failure;
@@ -117,22 +116,29 @@ begin
 	     assert w_lights = "000000" report "bad on to off" severity failure;
 	   wait for k_clk_period*1;
 	     assert w_lights = "111111" report "doesn't blink on and off for hazards" severity failure;
-       wait for k_clk_period*1;
        
       -- Right turn cycle
       w_left <= '0';
-      wait for k_clk_period*1;
+      wait for k_clk_period*2; -- wait for cycle to off and then R1
         assert w_lights = "000001" report "bad R1" severity failure;
-      wait for k_clk_period*3;
-        assert w_lights = "000000" report "bad right cycle to off" severity failure;
+      wait for k_clk_period;
+        assert w_lights = "000011" report "bad R2" severity failure;
+      wait for k_clk_period;
+        assert w_lights = "000111" report "bad R3" severity failure;
+      wait for k_clk_period;
+        assert w_lights = "000000" report "bad R3 to off" severity failure;
       
       -- Left turn cycle
       w_right <= '0';
       w_left <= '1';
       wait for k_clk_period*1;
         assert w_lights = "001000" report "bad L1" severity failure;
-      wait for k_clk_period*3;
-        assert w_lights = "000000" report "bad left cycle to off" severity failure;
+      wait for k_clk_period;
+        assert w_lights = "011000" report "bad L2" severity failure;
+      wait for k_clk_period;
+        assert w_lights = "111000" report "bad L3" severity failure;
+      wait for k_clk_period;
+        assert w_lights = "000000" report "bad L3 to off" severity failure;
       	      
 	
 	
